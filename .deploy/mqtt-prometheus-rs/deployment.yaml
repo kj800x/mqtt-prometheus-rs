@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mqtt-prometheus-rs
+  namespace: home-sensors
+spec:
+  replicas: 1
+  revisionHistoryLimit: 1
+  selector:
+    matchLabels:
+      app: mqtt-prometheus-rs
+  template:
+    metadata:
+      labels:
+        app: mqtt-prometheus-rs
+    spec:
+      imagePullSecrets:
+        - name: ghcr-kj800x
+      containers:
+        - name: mqtt-prometheus-rs
+          image: ghcr.io/kj800x/mqtt-prometheus-rs:commit-$SHA
+          command: ["mqtt-prometheus-rs"]
+          env:
+            - name: MQTT_HOST
+              value: mqtt.home.coolkev.com
+          ports:
+            - containerPort: 9090
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 9090
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
+          workingDir: "/usr/src/prom-money-rs"
