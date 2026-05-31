@@ -76,7 +76,7 @@ fn handle_waterheater_message(
         Err(_) => return,
     };
     let suffix = topic.strip_prefix("waterheater/").unwrap_or(topic);
-    let metric_key = suffix.replace('/', "_").replace('-', "_");
+    let metric_key = suffix.replace(['/', '-'], "_");
     if metric_key.is_empty() {
         return;
     }
